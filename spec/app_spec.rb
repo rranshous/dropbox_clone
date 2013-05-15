@@ -13,6 +13,81 @@ describe DropboxClone do
     i
   end
 
+  describe "#load_file" do
+
+    it "takes a file path arg" do 
+      def dropbox._load_file *args
+        load_file *args
+      end
+      expect{ dropbox._load_file 'path' }.not_to raise_error
+    end
+
+    it "is private" do
+      expect{ dropbox.load_file('path') }.to raise_error
+    end
+
+    it "takes an option revision arg" do
+      def dropbox._load_file *args
+        load_file *args
+      end
+      expect{ dropbox._load_file 'path', 'rev' }.not_to raise_error
+    end
+
+    it "returns nil if file not found" do
+      def dropbox._load_file *args
+        load_file *args
+      end
+      expect(dropbox._load_file('notfound')).to eq nil
+    end
+
+    it "returns savable if file is found" do
+      def dropbox._load_file *args
+        load_file *args
+      end
+      def dropbox.load_savable savable
+        savable
+      end
+      expect(dropbox._load_file('path').kind_of?(Savable::Savable)).to eq true
+    end
+
+    it "sets file path as file name on returned savable" do
+      def dropbox._load_file *args
+        load_file *args
+      end
+      def dropbox.load_savable savable
+        savable
+      end
+      expect(dropbox._load_file('path').file_name).to eq 'path'
+    end
+
+    it "sets revision as current version on returned savable" do
+      def dropbox._load_file *args
+        load_file *args
+      end
+      def dropbox.load_savable savable
+        savable
+      end
+      expect(dropbox._load_file('path','1').current_version).to eq '1'
+    end
+  end
+
+  describe "#load_savable" do
+    it "calls load on passed savable" do
+      def dropbox._load_savable *args
+        load_savable *args
+      end
+      savable = savable_cls.new
+      def savable.load
+        @saved = true
+      end
+      def savable.saved
+        @saved
+      end
+      dropbox._load_savable(savable)
+      expect(savable.saved).to eq true
+    end
+  end
+
   describe "#files" do
 
     it "has #files method" do

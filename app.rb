@@ -1,6 +1,7 @@
 require 'savable'
 
 class DropboxClone
+
   def files file_path=nil, revision=nil
     dropbox_metadata = {}
     response = { headers: { },
@@ -27,11 +28,12 @@ class DropboxClone
     file = Savable::SavableVersioned.new
     file.file_name = file_path
     file.current_version = revision unless revision.nil?
-    begin
-      file.load
-      return file
-    rescue
-      return nil
-    end
+    load_savable file
+  end
+
+  def load_savable savable
+    savable.load
+  rescue
+    nil
   end
 end
