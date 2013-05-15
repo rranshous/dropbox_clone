@@ -1,0 +1,25 @@
+
+
+# Endpoints
+#
+# Files and Metadata
+#  /files (GET)
+#  /files_put
+#  /files (POST)
+#  /metadata
+#  /delta
+#  /revisions
+#  /restore
+#  /search
+#  /shares
+#  /media
+#  /copy_ref
+#  /thumbnails
+#  /chunked_upload
+#  /commit_chunked_upload
+#
+#  File Operations
+#  /fileops/copy
+#  /fileops/create_folder
+#  /fileops/delete
+#  /fileops/move
