@@ -5,3 +5,6 @@ gem 'guard-rspec'
 gem 'pry'
 gem 'pry_debug'
 gem 'savable', :path=>'../savable'
+
+gem 'rack'
+gem 'thin'

@@ -191,18 +191,64 @@ describe DropboxClone do
     def dropbox._serialized_dropbox_metadata *args
       serialized_dropbox_metadata *args
     end
-    hand_serialized = JSON.generate dropbox.dropbox_metadata
+    hand_serialized = JSON.generate({'key'=>2})
     expect(dropbox._serialized_dropbox_metadata :file).to eq hand_serialized
   end
 
   describe "#dropbox_metadata" do
 
+    let(:file) { 
+      o = Object.new
+      def o.meta_data
+        {:meta=>true}
+      end
+      def o.to_h
+        {size:1024,
+         path:'/test/path',
+         version:123.4}
+      end
+      o
+    }
+
+    before :each do
+      def dropbox._dropbox_metadata *args
+        dropbox_metadata *args
+      end
+    end
+
     it "takes an argument" do
-      expect{ dropbox.dropbox_metadata :savable }.not_to :raise_error
+      expect{ dropbox._dropbox_metadata :savable }.not_to raise_error
     end
 
     it "returns a hash" do
-      expect(dropbox.dropbox_metadata :savable).to be_a_kind_of Hash
+      expect(dropbox._dropbox_metadata :savable).to be_a_kind_of Hash
+    end
+
+    it "includes the file's metadata in result" do
+      expect(dropbox._dropbox_metadata(file)[:meta]).to eq true
+    end
+
+    it "includes the file's to_h size in result" do
+      expect(dropbox._dropbox_metadata(file)['bytes']).to eq 1024
+    end
+
+    it "includes the file's to_h size human readable in result" do
+      expect(dropbox._dropbox_metadata(file)['size']).to eq '10.0K'
+    end
+
+    it "includes the file's to_h path in result" do
+      expect(dropbox._dropbox_metadata(file)['path']).to eq '/test/path'
+    end
+
+    it "includes the file's version in result" do
+      expect(dropbox._dropbox_metadata(file)['rev']).to eq 123.4
+    end
+
+    it "has every required key in response" do
+      expect(dropbox._dropbox_metadata(file).keys).to include('size',
+                                                              'bytes',
+                                                              'path',
+                                                              'rev')
     end
 
   end
