@@ -1,9 +1,10 @@
 require 'savable'
+require_relative 'savable_to_h'
+require_relative 'humanize'
 
 class DropboxClone
 
   def files file_path=nil, revision=nil
-    dropbox_metadata = {}
     response = { headers: { },
                  body: nil,
                  response_code: 200 }
@@ -17,8 +18,7 @@ class DropboxClone
       return response
     end
     response[:body] = file.data
-    dropbox_metadata.merge! file.meta_data
-    response[:headers]['x-dropbox-metadata'] = JSON.generate dropbox_metadata
+    response[:headers]['x-dropbox-metadata'] = serialized_dropbox_metadata file
     return response
   end
 
@@ -35,5 +35,21 @@ class DropboxClone
     savable.load
   rescue
     nil
+  end
+
+  def serialized_dropbox_metadata file
+    JSON.generate dropbox_metadata file
+  end
+
+  def dropbox_metadata file
+    result = {}
+    result.merge! file.meta_data
+    f_h = file.to_h
+    human_size = f_h[:size].humanize rescue nil
+    result.merge! 'size'  => human_size,
+                  'bytes' => f_h[:size],
+                  'path'  => f_h[:path],
+                  'rev'   => f_h[:version]
+    result
   end
 end
