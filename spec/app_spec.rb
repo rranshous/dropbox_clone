@@ -184,4 +184,27 @@ describe DropboxClone do
 
   end
 
+  it "serializes the dropbox metadata" do
+    def dropbox.dropbox_metadata *args
+      { 'key' => 2 }
+    end
+    def dropbox._serialized_dropbox_metadata *args
+      serialized_dropbox_metadata *args
+    end
+    hand_serialized = JSON.generate dropbox.dropbox_metadata
+    expect(dropbox._serialized_dropbox_metadata :file).to eq hand_serialized
+  end
+
+  describe "#dropbox_metadata" do
+
+    it "takes an argument" do
+      expect{ dropbox.dropbox_metadata :savable }.not_to :raise_error
+    end
+
+    it "returns a hash" do
+      expect(dropbox.dropbox_metadata :savable).to be_a_kind_of Hash
+    end
+
+  end
+
 end
